@@ -8,9 +8,9 @@ from rest_framework.routers import DefaultRouter
 from store.views import CartViewSet, OrderViewSet, ProductViewSet
 
 router = DefaultRouter()
-router.register(r'Product', ProductViewSet)
-router.register(r'Cart', CartViewSet)
-router.register(r'Order', OrderViewSet)
+router.register(r'products', ProductViewSet)
+router.register(r'carts', CartViewSet)
+router.register(r'orders', OrderViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls))
