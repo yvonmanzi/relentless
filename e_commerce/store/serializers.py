@@ -4,14 +4,14 @@ from store.models import Cart, Order, Product
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
-        name = Product
+        model = Product
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
-        name = Order
+        model = Order
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
-        name = Cart
+        model = Cart
