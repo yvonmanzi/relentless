@@ -39,9 +39,9 @@ class Order(models.Model):
     #TODO: What happens when one product insstance is deleted? how about user? makes sense to delete all the orders
     # associated with the user if he's deleted. so CASCASE is correct here
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    products = [models.ForeignKey(ProductInstance, on_delete="")]
+    products = [models.ForeignKey(ProductInstance, on_delete=models.RESTRICT)]
     #TODO: Double check the 'choices'
-    status = models.CharField(max_length=1, help_text='Order Status', choices=ORDER_STATUS, default='np')
+    status = models.CharField(max_length=3, help_text='Order Status', choices=ORDER_STATUS, default='np')
 
     # TODO: double check what blank and null would imply here. 
     date_placed = models.DateField(blank=True, null=True)
