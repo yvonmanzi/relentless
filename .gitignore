@@ -63,7 +63,7 @@ db.sqlite3-journal
 # Django migrations
 */migrations/
 */migrations/*
-store/migrations
+e_commerce/store/migrations
 
 # Flask stuff:
 instance/
