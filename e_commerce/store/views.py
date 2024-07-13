@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 
-from e_commerce.store.serializer import CartSerializer, OrderSerializer, ProductSerializer
+from store.serializer import CartSerializer, OrderSerializer, ProductSerializer
 
 from .models import Cart, Order, Product
 

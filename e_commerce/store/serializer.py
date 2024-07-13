@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from e_commerce.store.models import Cart, Order, Product
+from store.models import Cart, Order, Product
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'

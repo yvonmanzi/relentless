@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from e_commerce.store.views import CartViewSet, OrderViewSet, ProductViewSet
+from store.views import CartViewSet, OrderViewSet, ProductViewSet
 
 router = DefaultRouter()
 router.register(r'Product', ProductViewSet)
