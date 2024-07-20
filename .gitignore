@@ -64,6 +64,7 @@ db.sqlite3-journal
 */migrations/
 */migrations/*
 e_commerce/store/migrations
+authentication/migrations
 
 # Flask stuff:
 instance/
