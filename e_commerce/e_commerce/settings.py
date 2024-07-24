@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'store.apps.StoreConfig',
     'authentication',
     "phonenumber_field",
-    "rest_framework_simplejwt"
+    "rest_framework_simplejwt",
 ]
 
 MIDDLEWARE = [
