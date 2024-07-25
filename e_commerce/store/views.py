@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
 
-from store.serializers import CartSerializer, OrderSerializer, ProductSerializer
+from store.serializers import CartSerializer, OrderSerializer, ProductSerializer, CategorySerializer
 
 from .models import Cart, Order, Product, Category
 
@@ -14,17 +14,34 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.filter(available=True)
 
+    def retrieve(self, request, pk=None):
+        # get 'slug' from the Url
+        slug = request.query_params.get('slug')
+        product = get_object_or_404(Product,
+                                   id=id,
+                                   slug=slug,
+                                   available=True)
+        serializer = self.get_serializer(product)
+        return Response(serializer.data)
+        
+
     def list (self, request, category_slug=None)-> Response:
         category = None
         products = self.get_queryset()
         if category_slug:
             category = get_object_or_404(Category, slug=category_slug)
             products = self.get_queryset().filter(category=category)
-        #TODO: Do you hae to serialize here first?
-        # serializer = self.get_serializer(products, many=True)
-        return Response({'products': products, 
-                            'category': category, 
-                            'categories': Category.objects.all()})
+         # Serialize data
+        product_serializer = self.get_serializer(products, many=True)
+        category_serializer = CategorySerializer(category) if category else None
+        categories_serializer = CategorySerializer(Category.objects.all(), many=True)
+        response_data = {'products': product_serializer.data, 
+                            'categories': categories_serializer.data}
+        if category_serializer:
+            response_data['category'] = category_serializer.data 
+        return Response(response_data)
+        
+            
 
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
