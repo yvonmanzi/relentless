@@ -38,11 +38,14 @@ class Product(models.Model):
 
 
 class Cart(models.Model):
-    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    products = [models.ForeignKey(Product, on_delete=models.CASCADE)]
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    products = models.ManyToManyField(Product, related_name='carts',blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
 
     def __str__(self):
-        return f'{self.customer} cart'
+        return f' Cart {self.id} for {self.owner}'
     
 
 
