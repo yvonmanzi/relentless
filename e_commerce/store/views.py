@@ -10,17 +10,18 @@ from .models import Cart, Order, Product, Category
 
 #TODO: Will have to add some form of pagination
 
-class ProductViewSet(viewsets.ViewSet):
+class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.filter(available=True)
 
-    def retrieve(self, request, id=None):
+    def retrieve(self, request, pk=None):
         # get 'slug' from the Url
         slug = request.query_params.get('slug')
         product = get_object_or_404(Product,
-                                   id=id,
-                                   slug=slug,
+                                   id=pk,
                                    available=True)
+        if slug and slug != product.slug:
+            return Response({'detail': 'Slug mismatch'}, status=400)
         serializer = self.get_serializer(product)
         return Response(serializer.data)
         
@@ -28,11 +29,13 @@ class ProductViewSet(viewsets.ViewSet):
     def list (self, request, category_slug=None)-> Response:
         category = None
         products = self.get_queryset()
+        category_slug = request.query_params.get('category_slug')
         if category_slug:
             category = get_object_or_404(Category, slug=category_slug)
             products = self.get_queryset().filter(category=category)
+
          # Serialize data
-        product_serializer = self.get_serializer(products, many=True)
+        product_serializer = self.serializer_class(products, many=True)
         category_serializer = CategorySerializer(category) if category else None
         categories_serializer = CategorySerializer(Category.objects.all(), many=True)
         response_data = {'products': product_serializer.data, 
@@ -47,7 +50,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
 
-class CartViewSet(viewsets.ModelViewSet):
+class CartViewSet(viewsets.ViewSet):
     def list(self, request):
         carts = Cart.objects.all()
         serializer = CartSerializer(carts, many=True)
