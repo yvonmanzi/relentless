@@ -4,7 +4,10 @@ from store.models import Cart, Order, Product, Category
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display = ['owner']
+    list_display = ['owner', 'display_products']
+    def display_products(self, obj):
+        return ', '.join([product.name for product in Product.objects.all()])
+    display_products.short_description = 'Products'
 
 
 @admin.register(Category)
