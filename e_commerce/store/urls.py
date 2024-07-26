@@ -15,13 +15,12 @@ urlpatterns = [
     # Retrive a specific cart 
     path('carts/<int:id>/', CartViewSet.as_view({'get': 'retrieve'}), name='cart-detail'),
     #update or delete a specific cart
-    path('carts/<int:id>/', CartViewSet.as_view({'put': 'update', 'delete': 'destroy'}), name='cart-update-delete')
+    path('carts/<int:id>/', CartViewSet.as_view({'put': 'update', 'delete': 'destroy'}), name='cart-update-delete'),
     #TODO: Add product to cart, delete from it, checkout cart[aka place an order], etc. 
-    # path('carts/<int:id>/add_product', CartViewSet.as_view({'post': 'add_product'}), name='cart-add-product'),
-
-
-
+    path('cart_add_product/', CartViewSet.as_view({'post': 'cart_add_product'}), name='cart-add-product'),
+    path('cart_remove_product/', CartViewSet.as_view({'post': 'cart_remove_product'}), name='cart-remove-product'),
 
 ]
+
 
 

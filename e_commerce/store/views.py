@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action 
 from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
@@ -50,6 +50,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
 
+#TODO: build permissions for this View
 class CartViewSet(viewsets.ViewSet):
     lookup_field = 'id'  # Set the lookup field to 'id'
 
@@ -80,5 +81,28 @@ class CartViewSet(viewsets.ViewSet):
     def destroy(self, request, id=None):
         cart = get_object_or_404(Cart, id=id)
         cart.delete()
-        return Response(status=204)
+        return Response({"detail": "Cart deleted"}, status=status.HTTP_204_NO_CONTENT)
+
+    def cart_add_product(self, request):
+        cart_id = request.data.get('cart_id')
+        product_id = request.data.get('product_id')
+        if not cart_id or not product_id:
+             return Response({"detail": "Both cart_id and product_id are required."}, status=status.HTTP_400_BAD_REQUEST)
+        cart = get_object_or_404(Cart, id=cart_id)
+        product = get_object_or_404(Product, id=product_id)
+        cart.products.add(product)
+        return Response({"detail": "Product added to cart"}, status=status.HTTP_204_NO_CONTENT)
+
+    
+    def cart_remove_product(self, request):
+        cart_id = request.data.get('cart_id')
+        product_id = request.data.get('product_id')
+        if not cart_id or not product_id:
+             return Response({"detail": "Both cart_id and product_id are required."}, status=status.HTTP_400_BAD_REQUEST)
+        cart = get_object_or_404(Cart, id=cart_id)
+        product = get_object_or_404(Product, id=product_id)
+        cart.products.remove(product)
+        return Response({"detail": "Product removed from cart"} ,status=status.HTTP_204_NO_CONTENT)
+
+
     
