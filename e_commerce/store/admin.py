@@ -4,7 +4,7 @@ from store.models import Cart, Order, Product, Category
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display = ['owner', 'products']
+    list_display = ['owner']
 
 
 @admin.register(Category)
