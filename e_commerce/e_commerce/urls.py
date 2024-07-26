@@ -11,7 +11,7 @@ class CustomRouter(DefaultRouter):
     def get_lookup_regex(self, viewset, lookup_prefix=''):
         base_regex = super().get_lookup_regex(viewset, lookup_prefix)
         # Extend the base regex to include the slug
-        return f'(?P<{lookup_prefix}pk>[^/.]+)/(?P<slug>[^/.]+)'
+        return f'(?P<{lookup_prefix}id>[^/.]+)/(?P<slug>[^/.]+)'
 
 router = CustomRouter()
 router.register(r'products', ProductViewSet, basename='product')

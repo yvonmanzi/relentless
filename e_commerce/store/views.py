@@ -14,7 +14,7 @@ class ProductViewSet(viewsets.ViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.filter(available=True)
 
-    def retrieve(self, request, pk=None):
+    def retrieve(self, request, id=None):
         # get 'slug' from the Url
         slug = request.query_params.get('slug')
         product = get_object_or_404(Product,
@@ -58,21 +58,21 @@ class CartViewSet(viewsets.ModelViewSet):
         serializer = CartSerializer(carts, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, pk=None):
-        cart = get_object_or_404(Cart, pk=pk)
+    def retrieve(self, request, id=None):
+        cart = get_object_or_404(Cart, id=id)
         serializer = CartSerializer(cart)
         return Response(serializer.data)
 
-    def update(self, request, pk=None):
-        cart = get_object_or_404(Cart, pk=pk)
+    def update(self, request, id=None):
+        cart = get_object_or_404(Cart, id=id)
         serializer = CartSerializer(cart, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
 
-    def destroy(self, request, pk=None):
-        cart = get_object_or_404(Cart, pk=pk)
+    def destroy(self, request, id=None):
+        cart = get_object_or_404(Cart, id=id)
         cart.delete()
         return Response(status=204)
     
