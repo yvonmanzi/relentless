@@ -51,17 +51,20 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
 
 class CartViewSet(viewsets.ViewSet):
+    lookup_field = 'id'  # Set the lookup field to 'id'
+
     def list(self, request):
         carts = Cart.objects.all()
         serializer = CartSerializer(carts, many=True)
         return Response(serializer.data)
 
     def list_by_user(self, request, user_id=None):
-        carts = Cart.objects.filter(owner_id=user_id)
+        carts = Cart.objects.filter(owner=user_id)
         serializer = CartSerializer(carts, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, id=None):
+        print(id)
         cart = get_object_or_404(Cart, id=id)
         serializer = CartSerializer(cart)
         return Response(serializer.data)
