@@ -39,7 +39,7 @@ class Product(models.Model):
 
 class Cart(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product, related_name='carts', on_delete=models.RESTRICT, blank=True)
+    products = models.ManyToManyField(Product, related_name='carts',blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
