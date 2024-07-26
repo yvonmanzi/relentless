@@ -27,12 +27,13 @@ class ProductViewSet(viewsets.ViewSet):
 
     def list (self, request, category_slug=None)-> Response:
         category = None
-        products = self.get_queryset()
+        products = self.queryset
+        
         if category_slug:
             category = get_object_or_404(Category, slug=category_slug)
             products = self.get_queryset().filter(category=category)
          # Serialize data
-        product_serializer = self.get_serializer(products, many=True)
+        product_serializer = self.serializer_class(products, many=True)
         category_serializer = CategorySerializer(category) if category else None
         categories_serializer = CategorySerializer(Category.objects.all(), many=True)
         response_data = {'products': product_serializer.data, 
