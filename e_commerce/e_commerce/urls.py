@@ -18,7 +18,6 @@ router.register(r'products', ProductViewSet, basename='product')
 
 
 router = DefaultRouter()
-router.register(r'products', ProductViewSet, basename='product')
 router.register(r'carts', CartViewSet, basename='cart')
 router.register(r'orders', OrderViewSet, basename='order')
 # router.register(r'customers', CustomerViewSet)
