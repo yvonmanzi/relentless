@@ -2,6 +2,30 @@ from django.db import models
 import uuid
 from django.conf import settings
 
+class Address:
+    district = models.CharField(max_length=30)
+    sector = models.CharField(max_length=30)
+    cell = models.CharField(max_length=30)
+
+
+class PaymentMethod(models.Model):
+    PAYMENT_TYPE_CHOICES = [
+        ('CC', 'Credit Card'),
+        ('PP', 'PayPal'),
+        ('BT', 'Bank Transfer'),
+        ('MM', 'Mobile Money'),
+    ]
+
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    payment_type = models.CharField(max_length=2, choices=PAYMENT_TYPE_CHOICES)
+    card_number = models.CharField(max_length=16, blank=True, null=True)  # Only for Credit Card
+    paypal_email = models.EmailField(blank=True, null=True)  # Only for PayPal
+    bank_account = models.CharField(max_length=20, blank=True, null=True)  # Only for Bank Transfer
+    expiry_date = models.DateField(blank=True, null=True)  # Only for Credit Card
+    phone_number = models.PhoneNumberField(blank=True, null=True)
+
+    def __str__(self):
+        return f'Payment Method {self.id} for {self.customer}'
 class Category(models.Model):
     name = models.CharField(max_length=200, db_index=True)
     slug = models.SlugField(max_length=200, unique=True)
@@ -54,20 +78,21 @@ class Order(models.Model):
         ('s','SHIPPED'), ('r','ON ROAD'), ('p','PREPARING FOR SHIPPING'), ('rsh','READY FOR SHIPPING'), ('f','FAILED'), ('np','NOT PLACED')
         )
 
-    #TODO: What happens when one product insstance is deleted? how about user? makes sense to delete all the orders
-    # associated with the user if he's deleted. so CASCASE is correct here
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    products = [models.ForeignKey(Product, on_delete=models.RESTRICT)]
+    cart = [models.ForeignKey(Cart, on_delete=models.CASCADE)]
     #TODO: Double check the 'choices'
     status = models.CharField(max_length=3, help_text='Order Status', choices=ORDER_STATUS, default='np')
-
-    # TODO: double check what blank and null would imply here. 
-    date_placed = models.DateField(blank=True, null=True)
+    date_placed = models.DateField(auto_now_add=True)
+    # this should probably not allow blank to true.?
     delivery_date = models.DateField(blank=True, null=True)
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True)
+    delivery_address = models.ManyToManyField(Address)
 
     def __str__(self) -> str:
-        # TODO: A customer can have multiple orders, so might have to thnk of a better str representation.
-        return f'{self.customer} order'
+        return f'Order {self.id} for {self.customer}'
+
+
+
 
     
 
