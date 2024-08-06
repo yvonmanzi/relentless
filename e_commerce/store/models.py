@@ -72,6 +72,24 @@ class Cart(models.Model):
     def __str__(self):
         return f' Cart {self.id} for {self.owner}'
     
+class CartItem(models.Model):
+    cart = models.ForeignKey(
+        Cart, 
+        related_name='items',
+        on_delete=models.CASCADE
+    )
+    product = models.ForeignKey(
+        Product, 
+        related_name='order_items', 
+        on_delete=models.CASCADE
+    )
+    quantity = models.models.PositiveIntegerField(default=1)
+    def __str__(self):
+           return str(self.id)
+    def get_cost(self):
+        return self.product.price * self.quantity
+
+    
 
 
 class Order(models.Model):
