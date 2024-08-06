@@ -2,7 +2,10 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action 
 from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
+
+from store.permissions import IsCartOwner
 from store.serializers import CartSerializer, OrderSerializer, ProductSerializer, CategorySerializer
 
 from .models import Cart, Order, Product, Category
@@ -13,6 +16,7 @@ from .models import Cart, Order, Product, Category
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.filter(available=True)
+    permission_classes = [AllowAny]
 
     def retrieve(self, request, pk=None):
         # get 'slug' from the Url
@@ -52,7 +56,16 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 #TODO: build permissions for this View
 class CartViewSet(viewsets.ViewSet):
+    permission_classes = [IsCartOwner]
     lookup_field = 'id'  # Set the lookup field to 'id'
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            # this one will probably have to change to allow  only admin users. 
+            permission_classes = [AllowAny]
+        elif self.action == ['cart_add_product', 'cart_remove_product', 'list_by_user', 'update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsCartOwner]
+        return [permission() for permission in permission_classes]
 
     def list(self, request):
         carts = Cart.objects.all()
