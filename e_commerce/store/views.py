@@ -64,7 +64,6 @@ class CartViewSet(viewsets.ViewSet):
             # this one will probably have to change to allow  only admin users. 
             permission_classes = [AllowAny]
         elif self.action == ['cart_add_product', 'cart_remove_product', 'list_by_user', 'update', 'destroy']:
-            # We already set this as default. not sure we still have to include it here. 
             permission_classes = [IsAuthenticated, IsCartOwner]
         return [permission() for permission in permission_classes]
 
