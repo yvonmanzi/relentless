@@ -63,8 +63,9 @@ class Product(models.Model):
 
 
 class Cart(models.Model):
+    #TODO: Need to review foreign key v one to one so I can use 'related_name' better here. 
+    #TODO: Write tests for APIs. 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product, related_name='carts',blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
