@@ -1,8 +1,9 @@
 from django.db import models
 import uuid
 from django.conf import settings
+from phonenumber_field.modelfields import PhoneNumberField
 
-class Address:
+class Address(models.Model):
     district = models.CharField(max_length=30)
     sector = models.CharField(max_length=30)
     cell = models.CharField(max_length=30)
@@ -22,7 +23,7 @@ class PaymentMethod(models.Model):
     paypal_email = models.EmailField(blank=True, null=True)  # Only for PayPal
     bank_account = models.CharField(max_length=20, blank=True, null=True)  # Only for Bank Transfer
     expiry_date = models.DateField(blank=True, null=True)  # Only for Credit Card
-    phone_number = models.PhoneNumberField(blank=True, null=True)
+    phone_number = PhoneNumberField(blank=True, null=True)
 
     def __str__(self):
         return f'Payment Method {self.id} for {self.customer}'
@@ -74,9 +75,7 @@ class Cart(models.Model):
 
 
 class Order(models.Model):
-    ORDER_STATUS = (
-        ('s','SHIPPED'), ('r','ON ROAD'), ('p','PREPARING FOR SHIPPING'), ('rsh','READY FOR SHIPPING'), ('f','FAILED'), ('np','NOT PLACED')
-        )
+    ORDER_STATUS = (( 'p', 'placed'),('s','SHIPPED'), ('r','ON ROAD'), ('p','PREPARING FOR SHIPPING'), ('rsh','READY FOR SHIPPING'), ('f','FAILED'), ('np','NOT PLACED'))
 
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     cart = [models.ForeignKey(Cart, on_delete=models.CASCADE)]
@@ -86,7 +85,7 @@ class Order(models.Model):
     # this should probably not allow blank to true.?
     delivery_date = models.DateField(blank=True, null=True)
     payment_method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True)
-    delivery_address = models.ManyToManyField(Address)
+    delivery_address = models.ManyToManyField(Address,)
 
     def __str__(self) -> str:
         return f'Order {self.id} for {self.customer}'
