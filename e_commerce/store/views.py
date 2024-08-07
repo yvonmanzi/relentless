@@ -14,33 +14,33 @@ from .models import Cart, Product, Category
 
 #TODO: Will have to add some form of pagination
 
-class ProductViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductSerializer
-    queryset = Product.objects.filter(available=True)
+class ProductViewSet(viewsets.ViewSet):
+    
     permission_classes = [AllowAny]
+    lookup_field = 'id'  
 
-    def retrieve(self, request, pk=None):
+    def retrieve(self, request, id=None, slug=None):
         # get 'slug' from the Url
         slug = request.query_params.get('slug')
         product = get_object_or_404(Product,
-                                   id=pk,
+                                   id=id,
                                    available=True)
         if slug and slug != product.slug:
             return Response({'detail': 'Slug mismatch'}, status=400)
-        serializer = self.get_serializer(product)
+        serializer = ProductSerializer(product)
         return Response(serializer.data)
         
 
     def list (self, request, category_slug=None)-> Response:
         category = None
-        products = self.get_queryset()
+        products = Product.objects.filter(available=True)
         category_slug = request.query_params.get('category_slug')
         if category_slug:
             category = get_object_or_404(Category, slug=category_slug)
             products = self.get_queryset().filter(category=category)
 
          # Serialize data
-        product_serializer = self.serializer_class(products, many=True)
+        product_serializer = ProductSerializer(products, many=True)
         category_serializer = CategorySerializer(category) if category else None
         categories_serializer = CategorySerializer(Category.objects.all(), many=True)
         response_data = {'products': product_serializer.data, 

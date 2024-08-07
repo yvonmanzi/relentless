@@ -5,7 +5,10 @@ from store.views import CartViewSet, ProductViewSet
 
 urlpatterns = [
     #TODO: This url needs removing category from the path
-    path('products/<slug:category_slug>/', ProductViewSet.as_view({'get': 'list'}), name='product-list-by-category'),
+    path('products/category/<slug:category_slug>/', ProductViewSet.as_view({'get': 'list'}), name='product-list-by-category'),
+    path('products/<int:id>/<slug:slug>/', ProductViewSet.as_view({'get': 'retrieve'}), name='product-detail'),
+    path('products/', ProductViewSet.as_view({'get': 'list'}), name='product-list'),
+
     # list all carts
     path('carts/', CartViewSet.as_view({'get': 'list'}), name='cart-list'),
 

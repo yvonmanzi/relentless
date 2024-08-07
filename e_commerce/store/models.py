@@ -1,7 +1,7 @@
 from django.db import models
 import uuid
 from django.conf import settings
-from phonenumber_field.modelfields import PhoneNumberField
+from phonenumber_field.modelfields import PhoneNumberField # type: ignore
 
 class Address(models.Model):
     district = models.CharField(max_length=30)
