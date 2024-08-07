@@ -90,25 +90,6 @@ class CartItem(models.Model):
     def get_cost(self):
         return self.product.price * self.quantity
 
-    
-
-
-class Order(models.Model):
-    ORDER_STATUS = (( 'p', 'placed'),('s','SHIPPED'), ('r','ON ROAD'), ('p','PREPARING FOR SHIPPING'), ('rsh','READY FOR SHIPPING'), ('f','FAILED'), ('np','NOT PLACED'))
-
-    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    cart = [models.ForeignKey(Cart, on_delete=models.CASCADE)]
-    #TODO: Double check the 'choices'
-    status = models.CharField(max_length=3, help_text='Order Status', choices=ORDER_STATUS, default='np')
-    date_placed = models.DateField(auto_now_add=True)
-    # this should probably not allow blank to true.?
-    delivery_date = models.DateField(blank=True, null=True)
-    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True)
-    delivery_address = models.ManyToManyField(Address,)
-
-    def __str__(self) -> str:
-        return f'Order {self.id} for {self.customer}'
-
 
 
 
