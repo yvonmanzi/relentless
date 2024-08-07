@@ -33,4 +33,4 @@ class PaymentMethodAdmin(admin.ModelAdmin):
 class AddressAdmin(admin.ModelAdmin):
     list_display = ['district', 'sector', 'cell']
     list_filter = ['sector', 'cell', 'district']
-    list_editable = ['district', 'cell', 'sector']
+    list_editable = ['cell', 'sector']
