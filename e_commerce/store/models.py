@@ -84,7 +84,7 @@ class CartItem(models.Model):
         related_name='order_items', 
         on_delete=models.CASCADE
     )
-    quantity = models.models.PositiveIntegerField(default=1)
+    quantity = models.PositiveIntegerField(default=1)
     def __str__(self):
            return str(self.id)
     def get_cost(self):
