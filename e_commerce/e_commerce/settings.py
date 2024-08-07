@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'authentication',
     "phonenumber_field",
     "rest_framework_simplejwt",
+    "orders"
 ]
 
 MIDDLEWARE = [

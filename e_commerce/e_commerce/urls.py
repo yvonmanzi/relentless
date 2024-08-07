@@ -5,7 +5,8 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 
-from store.views import CartViewSet, OrderViewSet, ProductViewSet
+from store.views import CartViewSet, ProductViewSet
+from orders.views import OrderViewSet
 
 class CustomRouter(DefaultRouter):
     def get_lookup_regex(self, viewset, lookup_prefix=''):

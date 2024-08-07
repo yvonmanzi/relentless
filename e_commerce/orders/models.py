@@ -15,7 +15,7 @@ class Order(models.Model):
     delivery_address = models.ManyToManyField(Address,)
     paid = models.BooleanField(default=False)
     class Meta:
-        ordering = ('-created')
+        ordering = ('-date_placed', )
 
     def __str__(self) -> str:
         return f'Order {self.id} for {self.customer}'
@@ -34,7 +34,7 @@ class OrderItem(models.Model):
         related_name='order_items', 
         on_delete=models.CASCADE
     )
-    quantity = models.models.PositiveIntegerField(default=1)
+    quantity = models.PositiveIntegerField(default=1)
     def __str__(self):
            return str(self.id)
     def get_cost(self):
