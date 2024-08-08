@@ -1,5 +1,6 @@
+from django.conf import settings
 import factory  # type: ignore
-from store.models import Category, Product
+from store.models import Cart, Category, Product
 from factory.django import DjangoModelFactory # type: ignore
 from django.utils.text import slugify
 
@@ -25,4 +26,20 @@ class ProductFactory(DjangoModelFactory):
     updated = factory.Faker('date_time_this_year', before_now=True, after_now=False)  # Random update date
     
 
+
+class UserFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = settings.AUTH_USER_MODEL 
+
+    username = factory.Faker('user_name')
+    email = factory.Faker('email')
+    password = factory.PostGenerationMethodCall('set_password', 'password123')
+
+class CartFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Cart
+
+    owner = factory.SubFactory(UserFactory)  # Create a new User or use an existing one
+    created = factory.Faker('date_time_this_year', before_now=True, after_now=False)
+    updated = factory.Faker('date_time_this_year', before_now=True, after_now=True)
 
