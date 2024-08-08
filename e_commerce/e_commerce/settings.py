@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'authentication',
     "phonenumber_field",
     "rest_framework_simplejwt",
-    "orders"
+    "orders",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
