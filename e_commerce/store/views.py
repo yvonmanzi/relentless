@@ -20,31 +20,33 @@ class ProductViewSet(viewsets.ViewSet):
     lookup_field = 'id'  
 
     def retrieve(self, request, id=None, slug=None):
-        # Ensure that both id and slug match a product
         product = get_object_or_404(Product, id=id, slug=slug)
         
         serializer = ProductSerializer(product)
         return Response(serializer.data)
 
         
-    def list (self, request, category_slug=None)-> Response:
-        category = None
-        products = Product.objects.filter(available=True)
-        category_slug = request.query_params.get('category_slug')
-        if category_slug:
-            category = get_object_or_404(Category, slug=category_slug)
-            products = self.get_queryset().filter(category=category)
+    def list_by_category(self, request, category_slug=None)-> Response:
+        category = get_object_or_404(Category, slug=category_slug)  
+        products = Product.objects.filter(category=category)
 
-         # Serialize data
         product_serializer = ProductSerializer(products, many=True)
-        category_serializer = CategorySerializer(category) if category else None
+        category_serializer = CategorySerializer(category)
         categories_serializer = CategorySerializer(Category.objects.all(), many=True)
         response_data = {'products': product_serializer.data, 
-                            'categories': categories_serializer.data}
-        if category_serializer:
-            response_data['category'] = category_serializer.data 
+                            'categories': categories_serializer.data, 
+                            'category': category_serializer.data}
         return Response(response_data)
-        
+    
+    def list(self, request):
+        products = Product.objects.all()
+        product_serializer = ProductSerializer(products, many=True)
+        categories_serializer = CategorySerializer(Category.objects.all(), many=True)
+        response_data = {'products': product_serializer.data, 
+                            'categories': categories_serializer.data, 
+                            }
+        return Response(response_data)
+
 
 
 #TODO: test permissions for this View
