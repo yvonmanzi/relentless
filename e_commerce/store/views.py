@@ -20,17 +20,13 @@ class ProductViewSet(viewsets.ViewSet):
     lookup_field = 'id'  
 
     def retrieve(self, request, id=None, slug=None):
-        # get 'slug' from the Url
-        slug = request.query_params.get('slug')
-        product = get_object_or_404(Product,
-                                   id=id,
-                                   available=True)
-        if slug and slug != product.slug:
-            return Response({'detail': 'Slug mismatch'}, status=400)
+        # Ensure that both id and slug match a product
+        product = get_object_or_404(Product, id=id, slug=slug)
+        
         serializer = ProductSerializer(product)
         return Response(serializer.data)
-        
 
+        
     def list (self, request, category_slug=None)-> Response:
         category = None
         products = Product.objects.filter(available=True)
