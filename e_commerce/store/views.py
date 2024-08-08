@@ -9,7 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from store.permissions import IsCartOwner
 from store.serializers import CartSerializer, ProductSerializer, CategorySerializer
 
-from .models import Cart, Product, Category
+from .models import Cart, CartItem, Product, Category
 
 
 # TODO: Will have to add some form of pagination
@@ -60,14 +60,17 @@ class CartViewSet(viewsets.ViewSet):
         if self.action in ["list", "retrieve"]:
             # this one will probably have to change to allow  only admin users.
             permission_classes = [AllowAny]
-        elif self.action == [
+        elif self.action in [
             "cart_add_product",
             "cart_remove_product",
             "list_by_user",
             "update",
             "destroy",
         ]:
-            permission_classes = [IsAuthenticated, IsCartOwner]
+            # permission_classes = [IsAuthenticated, IsCartOwner]
+            permission_classes = [
+                AllowAny
+            ]  # allowing any for now, but we'll be checking permissions in the future
         return [permission() for permission in permission_classes]
 
     def list(self, request):
@@ -99,32 +102,35 @@ class CartViewSet(viewsets.ViewSet):
         cart.delete()
         return Response({"detail": "Cart deleted"}, status=status.HTTP_204_NO_CONTENT)
 
-    def cart_add_product(self, request):
+    def cart_add_product(
+        self, request
+    ):  # these names should probably change to cart_add_cartitem?
         cart_id = request.data.get("cart_id")
         product_id = request.data.get("product_id")
-        if not cart_id or not product_id:
+        quantity = request.data.get("quantity")
+        if not cart_id or not product_id or not quantity:
             return Response(
-                {"detail": "Both cart_id and product_id are required."},
+                {"detail": "cart_id, quantity, and product_id are required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         cart = get_object_or_404(Cart, id=cart_id)
         product = get_object_or_404(Product, id=product_id)
-        cart.products.add(product)
+
+        CartItem.objects.create(cart=cart, product=product, quantity=quantity)
         return Response(
             {"detail": "Product added to cart"}, status=status.HTTP_204_NO_CONTENT
         )
 
     def cart_remove_product(self, request):
-        cart_id = request.data.get("cart_id")
-        product_id = request.data.get("product_id")
-        if not cart_id or not product_id:
+        cart_item_id = request.data.get("cart_item_id")
+
+        if not cart_item_id:
             return Response(
-                {"detail": "Both cart_id and product_id are required."},
+                {"detail": "CartItem id required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        cart = get_object_or_404(Cart, id=cart_id)
-        product = get_object_or_404(Product, id=product_id)
-        cart.products.remove(product)
+        cart_item = get_object_or_404(CartItem, id=cart_item_id)
+        cart_item.delete()
         return Response(
             {"detail": "Product removed from cart"}, status=status.HTTP_204_NO_CONTENT
         )

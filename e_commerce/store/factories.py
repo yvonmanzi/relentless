@@ -1,6 +1,6 @@
 from django.conf import settings
 import factory  # type: ignore
-from store.models import Cart, Category, Product
+from store.models import Cart, CartItem, Category, Product
 from factory.django import DjangoModelFactory  # type: ignore
 from django.utils.text import slugify
 
@@ -56,3 +56,16 @@ class CartFactory(factory.django.DjangoModelFactory):
     owner = factory.SubFactory(UserFactory)  # Create a new User or use an existing one
     created = factory.Faker("date_time_this_year", before_now=True, after_now=False)
     updated = factory.Faker("date_time_this_year", before_now=True, after_now=True)
+
+
+class CartItemFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = CartItem
+
+    cart = factory.SubFactory(CartFactory)  # Use CartFactory to generate a cart
+    product = factory.SubFactory(
+        ProductFactory
+    )  # Use ProductFactory to generate a product
+    quantity = factory.Faker(
+        "random_int", min=1, max=10
+    )  # Generate a random quantity between 1 and 10
