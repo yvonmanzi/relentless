@@ -81,7 +81,6 @@ class CartViewSetTestCase(APITestCase):
         self.assertFalse(Cart.objects.filter(id=self.cart.id).exists())
 
     def test_cart_add_product(self):
-        # Assuming you have a Product model and ProductFactory
         cart_item = CartItemFactory(cart=self.cart)
         url = reverse("cart-add-product")
         data = {
@@ -97,14 +96,13 @@ class CartViewSetTestCase(APITestCase):
         self.assertIn(cart_item, self.cart.items.all())
 
     def test_cart_remove_product(self):
-        # Assuming you have a Product model and ProductFactory
-
-        cart_item = CartItemFactory(cart=self.cart, product=ProductFactory())
+        product = ProductFactory()
+        cart_item = CartItemFactory(cart=self.cart, product=product)
         url = reverse("cart-remove-product")
         data = {"cart_item_id": cart_item.id}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        # TODO: COME BAKC HERE self.assertNotIn(product, self.cart.products.all())
+        self.assertNotIn(cart_item, product.cart_items.all())
 
     # def test_cart_list_by_user(self):
     #     pass
