@@ -11,6 +11,25 @@ class Address(models.Model):
 
 
 class PaymentMethod(models.Model):
+    """
+    Model representing a payment method for a customer.
+
+    This model stores various types of payment methods that a customer can use,
+    including Credit Card, PayPal, Bank Transfer, and Mobile Money.
+
+    Attributes:
+        customer (ForeignKey): A reference to the User model.
+        payment_type (str): The type of payment method, chosen from PAYMENT_TYPE_CHOICES.
+        card_number (str): The card number for Credit Card payments (optional).
+        paypal_email (str): The email associated with a PayPal account (optional).
+        bank_account (str): The bank account number for Bank Transfer payments (optional).
+        expiry_date (Date): The expiry date for Credit Card payments (optional).
+        phone_number (PhoneNumberField): The phone number for Mobile Money payments (optional).
+
+    Methods:
+        __str__: Returns a string representation of the payment method.
+    """
+
     PAYMENT_TYPE_CHOICES = [
         ("CC", "Credit Card"),
         ("PP", "PayPal"),
