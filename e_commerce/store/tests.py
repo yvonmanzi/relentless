@@ -98,7 +98,7 @@ class CartViewSetTestCase(APITestCase):
     def test_cart_remove_product(self):
         product = ProductFactory()
         cart_item = CartItemFactory(cart=self.cart, product=product)
-        url = reverse("cart-remove-product", kwargs={"cart_item_id": cart_item.id})
+        url = reverse("cart-remove-product", kwargs={"id": cart_item.id})
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertNotIn(cart_item, product.cart_items.all())

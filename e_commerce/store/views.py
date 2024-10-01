@@ -56,22 +56,22 @@ class CartViewSet(viewsets.ViewSet):
     permission_classes = [IsCartOwner]
     lookup_field = "id"  # Set the lookup field to 'id'
 
-    def get_permissions(self):
-        if self.action in ["list", "retrieve"]:
-            # this one will probably have to change to allow  only admin users.
-            permission_classes = [AllowAny]
-        elif self.action in [
-            "cart_add_product",
-            "cart_remove_product",
-            "list_by_user",
-            "update",
-            "destroy",
-        ]:
-            # permission_classes = [IsAuthenticated, IsCartOwner]
-            permission_classes = [
-                AllowAny
-            ]  # allowing any for now, but we'll be checking permissions in the future
-        return [permission() for permission in permission_classes]
+    # def get_permissions(self):
+    #     if self.action in ["list", "retrieve"]:
+    #         # this one will probably have to change to allow  only admin users.
+    #         permission_classes = [AllowAny]
+    #     elif self.action in [
+    #         "cart_add_product",
+    #         "cart_remove_product",
+    #         "list_by_user",
+    #         "update",
+    #         "destroy",
+    #     ]:
+    #         # permission_classes = [IsAuthenticated, IsCartOwner]
+    #         permission_classes = [
+    #             AllowAny
+    #         ]  # allowing any for now, but we'll be checking permissions in the future
+    #     return [permission() for permission in permission_classes]
 
     def list(self, request):
         carts = Cart.objects.all()
@@ -102,6 +102,7 @@ class CartViewSet(viewsets.ViewSet):
         cart.delete()
         return Response({"detail": "Cart deleted"}, status=status.HTTP_204_NO_CONTENT)
 
+    # TODO: THIS should perhaps be named cart_add_item
     def cart_add_product(
         self, request
     ):  # these names should probably change to cart_add_cartitem?
@@ -122,15 +123,15 @@ class CartViewSet(viewsets.ViewSet):
         )
 
     #!TODO: Need to refactor here to make id come insde kwargs instead of the body
-    def cart_remove_product(self, request):
+    def cart_remove_product(self, request, id):
         cart_item_id = request.data.get("cart_item_id")
 
-        if not cart_item_id:
+        if not id:
             return Response(
                 {"detail": "CartItem id required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        cart_item = get_object_or_404(CartItem, id=cart_item_id)
+        cart_item = get_object_or_404(CartItem, id=id)
         cart_item.delete()
         return Response(
             {"detail": "Product removed from cart"}, status=status.HTTP_204_NO_CONTENT
