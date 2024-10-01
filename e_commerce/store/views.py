@@ -1,6 +1,6 @@
 from django.conf import settings
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -121,6 +121,7 @@ class CartViewSet(viewsets.ViewSet):
             {"detail": "Product added to cart"}, status=status.HTTP_204_NO_CONTENT
         )
 
+    #!TODO: Need to refactor here to make id come insde kwargs instead of the body
     def cart_remove_product(self, request):
         cart_item_id = request.data.get("cart_item_id")
 
@@ -134,3 +135,20 @@ class CartViewSet(viewsets.ViewSet):
         return Response(
             {"detail": "Product removed from cart"}, status=status.HTTP_204_NO_CONTENT
         )
+
+    def cart_item_change_quantity(self, request, id):
+        cart_item = get_object_or_404(CartItem, id=id)
+        change = request.data.get("change")
+
+        if change == "increment":
+            cart_item.quantity += 1
+        elif change == "decrement" and cart_item.quantity > 0:
+            cart_item.quantity -= 1
+        else:
+            return Response(
+                {"error": "Invalid change value or quantity cannot be negative."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        cart_item.save()
+        return Response({"quantity": cart_item.quantity}, status=status.HTTP_200_OK)

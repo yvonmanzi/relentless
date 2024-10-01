@@ -45,4 +45,9 @@ urlpatterns = [
         CartViewSet.as_view({"post": "cart_remove_product"}),
         name="cart-remove-product",
     ),
+    path(
+        "cart-item-change-quantity/",
+        CartViewSet.as_view({"post": "cart_item_change_quantity"}),
+        name="cart-item-change-quantity",
+    ),
 ]
