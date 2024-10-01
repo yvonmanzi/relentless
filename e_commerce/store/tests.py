@@ -98,11 +98,32 @@ class CartViewSetTestCase(APITestCase):
     def test_cart_remove_product(self):
         product = ProductFactory()
         cart_item = CartItemFactory(cart=self.cart, product=product)
-        url = reverse("cart-remove-product")
-        data = {"cart_item_id": cart_item.id}
-        response = self.client.post(url, data)
+        url = reverse("cart-remove-product", kwargs={"cart_item_id": cart_item.id})
+        response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertNotIn(cart_item, product.cart_items.all())
 
     # def test_cart_list_by_user(self):
     #     pass
+    def test_cart_item_change_quantity(self):
+        cart_item = CartItemFactory(
+            cart=self.cart, quantity=2
+        )  # Ensure initial quantity
+        url = reverse("cart-item-change-quantity", kwargs={"id": cart_item.id})
+
+        # Test increment
+        increment_data = {"change": "increment"}
+        response = self.client.post(url, increment_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["quantity"], cart_item.quantity + 1)
+
+        # Test decrement
+        decrement_data = {"change": "decrement"}
+        response = self.client.post(url, decrement_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["quantity"], cart_item.quantity
+        )  # Should be back to original
+
+    def test_cart_checkout(self):
+        pass
