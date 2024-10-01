@@ -82,16 +82,19 @@ class CartViewSetTestCase(APITestCase):
 
     def test_cart_add_product(self):
         # Assuming you have a Product model and ProductFactory
-        cart_item = CartItemFactory()
+        cart_item = CartItemFactory(cart=self.cart)
         url = reverse("cart-add-product")
         data = {
-            "cart_id": cart_item.id,
-            "product_id": cart_item.product,
+            "cart_id": self.cart.id,
+            "product_id": cart_item.product.id,
             "quantity": cart_item.quantity,
         }
         response = self.client.post(url, data)
+        print("Response:", response.data)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertIn(cart_item, self.cart.cart_items.all())
+        print("Current cart items:", self.cart.items.all())
+        print("Cart item:", cart_item)
+        self.assertIn(cart_item, self.cart.items.all())
 
     def test_cart_remove_product(self):
         # Assuming you have a Product model and ProductFactory
