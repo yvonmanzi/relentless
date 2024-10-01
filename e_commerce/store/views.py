@@ -1,6 +1,6 @@
 from django.conf import settings
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -56,22 +56,22 @@ class CartViewSet(viewsets.ViewSet):
     permission_classes = [IsCartOwner]
     lookup_field = "id"  # Set the lookup field to 'id'
 
-    def get_permissions(self):
-        if self.action in ["list", "retrieve"]:
-            # this one will probably have to change to allow  only admin users.
-            permission_classes = [AllowAny]
-        elif self.action in [
-            "cart_add_product",
-            "cart_remove_product",
-            "list_by_user",
-            "update",
-            "destroy",
-        ]:
-            # permission_classes = [IsAuthenticated, IsCartOwner]
-            permission_classes = [
-                AllowAny
-            ]  # allowing any for now, but we'll be checking permissions in the future
-        return [permission() for permission in permission_classes]
+    # def get_permissions(self):
+    #     if self.action in ["list", "retrieve"]:
+    #         # this one will probably have to change to allow  only admin users.
+    #         permission_classes = [AllowAny]
+    #     elif self.action in [
+    #         "cart_add_product",
+    #         "cart_remove_product",
+    #         "list_by_user",
+    #         "update",
+    #         "destroy",
+    #     ]:
+    #         # permission_classes = [IsAuthenticated, IsCartOwner]
+    #         permission_classes = [
+    #             AllowAny
+    #         ]  # allowing any for now, but we'll be checking permissions in the future
+    #     return [permission() for permission in permission_classes]
 
     def list(self, request):
         carts = Cart.objects.all()
@@ -102,6 +102,7 @@ class CartViewSet(viewsets.ViewSet):
         cart.delete()
         return Response({"detail": "Cart deleted"}, status=status.HTTP_204_NO_CONTENT)
 
+    # TODO: THIS should perhaps be named cart_add_item
     def cart_add_product(
         self, request
     ):  # these names should probably change to cart_add_cartitem?
@@ -121,16 +122,34 @@ class CartViewSet(viewsets.ViewSet):
             {"detail": "Product added to cart"}, status=status.HTTP_204_NO_CONTENT
         )
 
-    def cart_remove_product(self, request):
+    #!TODO: Need to refactor here to make id come insde kwargs instead of the body
+    def cart_remove_product(self, request, id):
         cart_item_id = request.data.get("cart_item_id")
 
-        if not cart_item_id:
+        if not id:
             return Response(
                 {"detail": "CartItem id required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        cart_item = get_object_or_404(CartItem, id=cart_item_id)
+        cart_item = get_object_or_404(CartItem, id=id)
         cart_item.delete()
         return Response(
             {"detail": "Product removed from cart"}, status=status.HTTP_204_NO_CONTENT
         )
+
+    def cart_item_change_quantity(self, request, id):
+        cart_item = get_object_or_404(CartItem, id=id)
+        change = request.data.get("change")
+
+        if change == "increment":
+            cart_item.quantity += 1
+        elif change == "decrement" and cart_item.quantity > 0:
+            cart_item.quantity -= 1
+        else:
+            return Response(
+                {"error": "Invalid change value or quantity cannot be negative."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        cart_item.save()
+        return Response({"quantity": cart_item.quantity}, status=status.HTTP_200_OK)
